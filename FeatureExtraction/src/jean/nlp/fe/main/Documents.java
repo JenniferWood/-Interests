@@ -30,8 +30,8 @@ public class Documents {
 	}
 	
 	public static class Document 
-	{	
-		//Sentence[] docSents;
+	{
+		public  ArrayList<Integer> docSents = new ArrayList<Integer>();
 		public ArrayList<String> docWordsDict = new ArrayList<String>();
 		public ArrayList<Integer> docKeyWords = new ArrayList<Integer>();
 
@@ -40,21 +40,30 @@ public class Documents {
 			
 			//Read file and initialize word index array
 			ArrayList<String> docLines = new ArrayList<String>();
-			ArrayList<String> words =  new ArrayList<String>();
+			
 			FileUtil.readLines(docName, docLines);
 			
+			int s=0;
 			for(String line : docLines)
 			{
+				ArrayList<String> words =  new ArrayList<String>();
 				FileUtil.tokenizeAndLowerCase(line, words);
-			}
-			for(String word:words){
-				int index = docWordsDict.indexOf(word);
-				if(index < 0){
-					index = docWordsDict.size();
-					docWordsDict.add(word);
+				
+				docSents.add(s);
+				s += words.size();
+				
+				
+				
+				for(String word:words){
+					int index = docWordsDict.indexOf(word);
+					if(index < 0){
+						index = docWordsDict.size();
+						docWordsDict.add(word);
+					}
+					docKeyWords.add(index);
 				}
-				docKeyWords.add(index);
 			}
+			
 		}
 		
 		public int whichPOS(String s){//return 1-n/v/a 0-o
@@ -62,5 +71,6 @@ public class Documents {
 			if(pos.indexOf('n')>=0 || pos.indexOf('v')>0 || pos.indexOf('a')>=0) return 1;
 			else return 0;
 		}
+		
 	}//Class Document
 }//Class Documents

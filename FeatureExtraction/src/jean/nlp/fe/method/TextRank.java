@@ -15,14 +15,17 @@ public class TextRank {
 	static double min_delta = 0.0001;//收敛系数
 	
 	ArrayList<String> wordDict;
-	ArrayList<Integer> keyWords;
+	ArrayList<Integer> keyWords,sentWords;
 	Map<Integer,List<Double>> map = new HashMap<Integer,List<Double>>();
 	int[] sumw;
 	double[] tr;
 	int[][] weight;
+	
 	public TextRank(Document document){
 		wordDict = document.docWordsDict;
 		keyWords = document.docKeyWords;
+		sentWords = document.docSents;
+		
 		sumw = new int[wordDict.size()];
 		tr = new double[wordDict.size()];
 		weight = new int[wordDict.size()][wordDict.size()];
@@ -118,12 +121,21 @@ public class TextRank {
 		
 		List<String> output = new ArrayList<String>();
 		
+		int startS = 0;
 		for(i=0;i<concur.length-1;i++){
 			StringBuilder sb = new StringBuilder();
 			if(concur[i]==1){
 				sb.append(wordDict.get(keyWords.get(i)));
+				//找到i所在的句子
+				for(int ss = startS; ss<sentWords.size()-1;ss++){
+					if(sentWords.get(ss)<=i && i<sentWords.get(ss+1)){
+						startS = ss;
+						break;
+					}
+				}
 				int j=i+1;
-				for(;j<i+2 && concur[j]==1;j++){//每个短语最多2个词
+				for(;j<sentWords.get(startS+1) && j<i+3 && concur[j]==1;j++){//同一个句子里每个短语最多2个词
+					if(wordDict.get(keyWords.get(j)).equals(wordDict.get(keyWords.get(i)))) break;
 					sb.append(wordDict.get(keyWords.get(j)));
 				}
 				if(!output.contains(sb.toString())) output.add(sb.toString());
